@@ -1,24 +1,34 @@
 package com.prithvipatil.financiallyprudentcar.service;
 
-import com.prithvipatil.financiallyprudentcar.model.CarBuyer;
+import com.prithvipatil.financiallyprudentcar.Util.CurrencyUtil;
+import com.prithvipatil.financiallyprudentcar.model.Buyer;
+import com.prithvipatil.financiallyprudentcar.model.LoanDetails;
 import com.prithvipatil.financiallyprudentcar.model.Specifications;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
+
+@Service
 public class ApplicationService {
-    private Integer loanTenureInMonths;
-    private Double rateOfInterest;
-    private CarBuyer carBuyer;
 
-    public ApplicationService(Specifications inputSpecifications) {
-        this.loanTenureInMonths = inputSpecifications.getLoanTenureInMonths();
-        this.rateOfInterest = inputSpecifications.getRateOfInterest();
-        carBuyer= new CarBuyer(inputSpecifications.getYearlyTakeHomeIncome(),inputSpecifications.getCarBudgetAsPercentageOfTakeHomeIncome(),inputSpecifications.getCarDownPaymentPercentage());
+    @Autowired
+    private InterestCalculator interestCalculator;
+
+    @Autowired
+    private CurrencyUtil currencyUtil;
+
+    public String priceOfCar(Specifications specifications, String countryCode) {
+        LoanDetails loanDetails = specifications.getLoanDetails();
+        Double financedAmount = interestCalculator.getPrincipalAmount(loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths(), getEMI(specifications.getBuyer()));
+        Double costOfCar = financedAmount * 100 / (100 - loanDetails.getCarDownPaymentPercentage());
+        return currencyUtil.currencyWithChosenLocalisation((int) Math.ceil(costOfCar), new Locale("", countryCode != null ? countryCode : "IN"));
     }
 
-    public int priceOfCar() {
-        Double emiAmount = carBuyer.getMonthlyTakeHomeIncome() * carBuyer.getCarBudgetAsPercentageOfTakeHomeIncome() / 100;
-        //financed amount is 80% of car cost
-        Double financedAmount = InterestCalculator.getPrincipalAmount(this.rateOfInterest, this.loanTenureInMonths, emiAmount);
-        Double costOfCar = financedAmount * 100 / (100 - carBuyer.getCarDownPaymentPercentage());
-        return (int) Math.ceil(costOfCar);
+
+    private Double getEMI(Buyer buyer) {
+        return buyer.getMonthlyTakeHomeIncome() * buyer.getEmiAsPercentageOfMonthlyIncome() / 100;
     }
+
 }
