@@ -1,10 +1,12 @@
 package com.prithvipatil.financiallyprudentcar.controller;
 
-import com.prithvipatil.financiallyprudentcar.model.Specifications;
+import com.prithvipatil.financiallyprudentcar.model.request.Specifications;
 import com.prithvipatil.financiallyprudentcar.service.ApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -16,7 +18,12 @@ public class ApplicationController {
     private ApplicationService applicationService;
 
     @GetMapping(value = {"/car-price/country-code/{country-code}"})
-    public String getCarPrice(@RequestBody Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) {
+    public String getCarPrice(@RequestBody @Valid Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) {
         return applicationService.priceOfCar(inputSpecifications, countryCode);
+    }
+
+    @GetMapping(value = {"/down-payment/country-code/{country-code}"})
+    public String getDownPayment(@RequestBody @Valid Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) throws Exception {
+        return applicationService.computeDownPayment(inputSpecifications, countryCode);
     }
 }
