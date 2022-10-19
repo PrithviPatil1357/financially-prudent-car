@@ -22,6 +22,11 @@ public class ApplicationController {
         return applicationService.priceOfCar(inputSpecifications, countryCode);
     }
 
+    @GetMapping(value = {"/emi/country-code/{country-code}"})
+    public String getEMI(@RequestBody @Valid Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) {
+        return applicationService.getEMIForSpecifications(inputSpecifications, countryCode);
+    }
+
     @GetMapping(value = {"/down-payment/country-code/{country-code}"})
     public String getDownPayment(@RequestBody @Valid Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) throws Exception {
         return applicationService.computeDownPayment(inputSpecifications, countryCode);

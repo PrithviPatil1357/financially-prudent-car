@@ -13,9 +13,9 @@ public class InterestCalculator {
         return principalAmount + interestAmount;
     }
 
-    public int getEMI(Double principalAmount, Double rateOfInterest, Integer tenureInMonths) {
+    public Double getEMI(Double principalAmount, Double rateOfInterest, Integer tenureInMonths) {
         Double totalAmountPayable = getTotalAmountPayable(principalAmount, rateOfInterest, tenureInMonths);
-        return (int) Math.ceil(totalAmountPayable / tenureInMonths);
+        return totalAmountPayable / tenureInMonths;
     }
 
     public Double getPrincipalAmount(Double rateOfInterest, Integer tenureInMonths, Double emiAmount) {

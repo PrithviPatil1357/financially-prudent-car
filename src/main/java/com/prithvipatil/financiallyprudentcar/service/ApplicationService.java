@@ -71,4 +71,18 @@ public class ApplicationService {
             throw new Exception("Bad input");
         }
     }
+
+    public String getEMIForSpecifications(Specifications inputSpecifications, String countryCode) {
+        try {
+            Double costOfCar = inputSpecifications.getCost();
+            LoanDetails loanDetails = inputSpecifications.getLoanDetails();
+            Buyer buyer = inputSpecifications.getBuyer();
+            Double loanPrincipalAmount = costOfCar - buyer.getCarDownPaymentAmountAfforded();
+            Double emi = interestCalculator.getEMI(loanPrincipalAmount,loanDetails.getRateOfInterest(),loanDetails.getLoanTenureInMonths());
+            return currencyUtil.currencyWithChosenLocalisation((int) Math.ceil(emi), new Locale("", countryCode != null ? countryCode : "IN"));
+        } catch (Exception e) {
+            log.error("Error ocuured while computing getEMIForSpecifications {}", e);
+            throw e;
+        }
+    }
 }
