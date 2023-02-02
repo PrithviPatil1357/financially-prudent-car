@@ -11,6 +11,7 @@
 	<groupId>com.prithvipatil</groupId>
 	<artifactId>financially-prudent-car</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>financially-prudent-car</name>
 	<description>Given your take home, how expensive should your car be.</description>
 	<properties>

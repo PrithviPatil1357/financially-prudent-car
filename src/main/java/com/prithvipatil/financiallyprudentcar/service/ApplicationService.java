@@ -4,10 +4,12 @@ import com.prithvipatil.financiallyprudentcar.Util.CurrencyUtil;
 import com.prithvipatil.financiallyprudentcar.model.request.Buyer;
 import com.prithvipatil.financiallyprudentcar.model.request.LoanDetails;
 import com.prithvipatil.financiallyprudentcar.model.request.Specifications;
+import com.prithvipatil.financiallyprudentcar.model.response.CarPrice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Currency;
 import java.util.Locale;
 
 
@@ -21,9 +23,12 @@ public class ApplicationService {
     @Autowired
     private CurrencyUtil currencyUtil;
 
-    public String priceOfCar(Specifications specifications, String countryCode) {
+    public CarPrice priceOfCar(Specifications specifications, String countryCode) {
+        log.info("Entering method priceOfCar with specifications: {} and countryCode: {}", specifications, countryCode);
         Double costOfCar = getCostOfCar(specifications);
-        return currencyUtil.currencyWithChosenLocalisation((int) Math.ceil(costOfCar), new Locale("", countryCode != null ? countryCode : "IN"));
+        log.info("Exiting method priceOfCar with result: {}", costOfCar);
+        Currency cur = Currency.getInstance("INR");
+        return new CarPrice(Math.ceil(costOfCar),cur.getSymbol());
     }
 
 
@@ -36,6 +41,7 @@ public class ApplicationService {
     }
 
     private Double getCostOfCar(Specifications specifications) {
+        log.info("Entering method getCostOfCar with specifications: {}", specifications);
         Double costOfCar;
         try {
             LoanDetails loanDetails = specifications.getLoanDetails();
@@ -43,12 +49,14 @@ public class ApplicationService {
             Double principalAmount = interestCalculator.getPrincipalAmount(loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths(), getEMI(specifications.getBuyer()));
             Double financedAmountWithInterest = interestCalculator.getTotalAmountPayable(principalAmount, loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths());
             costOfCar = financedAmountWithInterest + getDownPaymentAmount(buyer, principalAmount);
+            log.info("Exiting method getCostOfCar with result: {}", costOfCar);
             return costOfCar;
         } catch (Exception e) {
-            log.error("Error ocuured while computing getCostOfCar {}", e);
+            log.error("Error occurred while computing getCostOfCar: {}", e);
             throw e;
         }
     }
+
 
     private Double getDownPaymentAmount(Buyer buyer, Double principalAmount) {
         if (buyer.getCarDownPaymentAmountAfforded() != null) {
