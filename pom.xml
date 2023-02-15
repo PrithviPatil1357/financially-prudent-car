@@ -15,7 +15,9 @@
 	<name>financially-prudent-car</name>
 	<description>Given your take home, how expensive should your car be.</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>1.8</java.version>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -13,15 +13,15 @@ public class FinanciallyPrudentCarApplication {
 		SpringApplication.run(FinanciallyPrudentCarApplication.class, args);
 	}
 
-//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/**")
-//						.allowedOrigins("https://financially-prudent-car.firebaseapp.com")
-//						.allowedMethods("*");
-//			}
-//		};
-//	}
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOrigins("http://localhost:3000","https://financially-prudent-car.firebaseapp.com","https://financially-prudent-car.web.app")
+						.allowedMethods("*");
+			}
+		};
+	}
 }
