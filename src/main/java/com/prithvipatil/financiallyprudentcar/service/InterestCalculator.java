@@ -20,6 +20,6 @@ public class InterestCalculator {
 
     public Double getPrincipalAmount(Double rateOfInterest, Integer tenureInMonths, Double emiAmount) {
         Double totalAmountPayable = tenureInMonths * emiAmount;
-        return totalAmountPayable / (1 + (tenureInMonths * rateOfInterest / (12 * 100)));
+        return totalAmountPayable / (1 + ((tenureInMonths * rateOfInterest) / (12 * 100)));
     }
 }

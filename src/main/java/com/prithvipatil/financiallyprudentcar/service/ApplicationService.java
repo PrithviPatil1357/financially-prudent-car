@@ -46,9 +46,8 @@ public class ApplicationService {
         try {
             LoanDetails loanDetails = specifications.getLoanDetails();
             Buyer buyer = specifications.getBuyer();
-            Double principalAmount = interestCalculator.getPrincipalAmount(loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths(), getEMI(specifications.getBuyer()));
-            Double financedAmountWithInterest = interestCalculator.getTotalAmountPayable(principalAmount, loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths());
-            costOfCar = financedAmountWithInterest + getDownPaymentAmount(buyer, principalAmount);
+            Double principalAmount = interestCalculator.getPrincipalAmount(loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths(), getEMI(buyer));
+            costOfCar = (buyer.getCarDownPaymentAmountAfforded()!=null?principalAmount+buyer.getCarDownPaymentAmountAfforded():principalAmount/(1- buyer.getCarDownPaymentPercentage()/100));
             log.info("Exiting method getCostOfCar with result: {}", costOfCar);
             return costOfCar;
         } catch (Exception e) {
@@ -85,11 +84,11 @@ public class ApplicationService {
             Double costOfCar = inputSpecifications.getCost();
             LoanDetails loanDetails = inputSpecifications.getLoanDetails();
             Buyer buyer = inputSpecifications.getBuyer();
-            Double loanPrincipalAmount = costOfCar - buyer.getCarDownPaymentAmountAfforded();
+            Double loanPrincipalAmount = inputSpecifications.getBuyer().getCarDownPaymentAmountAfforded()!=null?costOfCar - buyer.getCarDownPaymentAmountAfforded():costOfCar - costOfCar * buyer.getCarDownPaymentPercentage()/100;
             Double emi = interestCalculator.getEMI(loanPrincipalAmount,loanDetails.getRateOfInterest(),loanDetails.getLoanTenureInMonths());
             return currencyUtil.currencyWithChosenLocalisation((int) Math.ceil(emi), new Locale("", countryCode != null ? countryCode : "IN"));
         } catch (Exception e) {
-            log.error("Error ocuured while computing getEMIForSpecifications {}", e);
+            log.error("Error occured while computing getEMIForSpecifications {}", e);
             throw e;
         }
     }
