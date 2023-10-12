@@ -6,6 +6,7 @@ import com.prithvipatil.financiallyprudentcar.model.request.Buyer;
 import com.prithvipatil.financiallyprudentcar.model.request.LoanDetails;
 import com.prithvipatil.financiallyprudentcar.model.request.Specifications;
 import com.prithvipatil.financiallyprudentcar.model.response.CarPrice;
+import com.prithvipatil.financiallyprudentcar.model.response.DownPayment;
 import com.prithvipatil.financiallyprudentcar.model.response.Income;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,15 +60,7 @@ public class ApplicationService {
     }
 
 
-    private Double getDownPaymentAmount(Buyer buyer, Double principalAmount) {
-        if (buyer.getCarDownPaymentAmountAfforded() != null) {
-            return buyer.getCarDownPaymentAmountAfforded();
-        } else {
-            return principalAmount * buyer.getCarDownPaymentPercentage() / 100;
-        }
-    }
-
-    public String computeDownPayment(Specifications specifications, String countryCode) throws Exception {
+    public DownPayment computeDownPayment(Specifications specifications, String countryCode) throws Exception {
         if (specifications.getCost() != null && specifications.getCost() > 0 && specifications.getBuyer().getCarDownPaymentAmountAfforded() == null && specifications.getBuyer().getCarDownPaymentPercentage() == null) {
             LoanDetails loanDetails = specifications.getLoanDetails();
             Buyer buyer = specifications.getBuyer();
@@ -75,7 +68,7 @@ public class ApplicationService {
             Double principalAmount = interestCalculator.getPrincipalAmount(loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths(), emi);
             Double interest = interestCalculator.calculateInterest(principalAmount, loanDetails.getRateOfInterest(), loanDetails.getLoanTenureInMonths());
             Double downPaymentNeeded = specifications.getCost() + interest - (emi * loanDetails.getLoanTenureInMonths());
-            return currencyUtil.currencyWithChosenLocalisation((int) Math.ceil(downPaymentNeeded), new Locale("", countryCode != null ? countryCode : "IN"));
+            return new DownPayment((double) (Math.round(downPaymentNeeded*100)/100), (double) (Math.round(downPaymentNeeded/specifications.getCost()*100*100)/100));
         } else {
             throw new Exception("Bad input");
         }
@@ -110,7 +103,7 @@ public class ApplicationService {
             }
             Double emi = computeEmiForSpecifications(input);
             Double income = emi * 100 / input.getBuyer().getEmiAsPercentageOfMonthlyIncome()*12;
-            return new Income(income);
+            return new Income(Math.ceil(income));
         } catch (Exception e) {
             log.error("Error occured while computing getEMIForSpecifications {}", e);
             throw e;

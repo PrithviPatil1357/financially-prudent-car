@@ -3,6 +3,7 @@ package com.prithvipatil.financiallyprudentcar.controller;
 import com.prithvipatil.financiallyprudentcar.exceptions.CustomException;
 import com.prithvipatil.financiallyprudentcar.model.request.Specifications;
 import com.prithvipatil.financiallyprudentcar.model.response.CarPrice;
+import com.prithvipatil.financiallyprudentcar.model.response.DownPayment;
 import com.prithvipatil.financiallyprudentcar.model.response.Income;
 import com.prithvipatil.financiallyprudentcar.service.ApplicationService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class ApplicationController {
     }
 
     @PostMapping(value = {"/down-payment/country-code/{country-code}"})
-    public String getDownPayment(@RequestBody @Valid Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) throws Exception {
+    public DownPayment getDownPayment(@RequestBody @Valid Specifications inputSpecifications, @PathVariable(name = "country-code", required = false) String countryCode) throws Exception {
         return applicationService.computeDownPayment(inputSpecifications, countryCode);
     }
 
